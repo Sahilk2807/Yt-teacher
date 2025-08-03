@@ -19,11 +19,11 @@ export interface AnalysisResult {
 }
 
 // =========================================================================
-// == IMPORTANT: Replace this with the URL of your new backend service on Render ==
+// == This now points to your LIVE backend server! ==
 // =========================================================================
-const BACKEND_URL = 'https://your-backend-name.onrender.com'; // Example: https://yt-teacher-backend.onrender.com
+const BACKEND_URL = 'https://yt-teacher-backend.onrender.com';
 
-// This is the new, real function that calls your backend
+// This is the real function that calls your backend
 export const analyzeUrl = async (url: string): Promise<AnalysisResult> => {
     if (!url) {
         throw new Error('URL cannot be empty.');
