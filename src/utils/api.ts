@@ -1,3 +1,8 @@
+// src/utils/api.ts
+
+import axios from 'axios';
+
+// The interface remains the same
 export interface AnalysisResult {
     monetization: { status: string; checked: boolean };
     tags: string[];
@@ -13,33 +18,34 @@ export interface AnalysisResult {
     };
 }
 
+// =========================================================================
+// == IMPORTANT: Replace this with the URL of your new backend service on Render ==
+// =========================================================================
+const BACKEND_URL = 'https://your-backend-name.onrender.com'; // Example: https://yt-teacher-backend.onrender.com
+
+// This is the new, real function that calls your backend
 export const analyzeUrl = async (url: string): Promise<AnalysisResult> => {
-    console.log("Analyzing URL:", url);
-    // Simulate network delay
-    await new Promise(res => setTimeout(res, 1500));
-
-    // Simulate different results based on URL
-    if (url.includes("fail") || url.length < 15) {
-        throw new Error("Invalid or unsupported YouTube URL.");
+    if (!url) {
+        throw new Error('URL cannot be empty.');
     }
 
-    if (url.includes("private")) {
-         throw new Error("Analysis of private channels/videos is not supported.");
-    }
-    
-    // Return mock data
-    return {
-        monetization: { status: 'Enabled', checked: true },
-        tags: ['youtube tools', 'reactjs', 'typescript', 'tailwind css', 'seo', 'web development', 'free tools'],
-        channelId: 'UC-lHJZR3Gqxm24_Vd_AJ5Yw',
-        thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-        earnings: { low: '$500', high: '$8,000' },
-        shadowban: { status: 'Not Shadowbanned', checked: true },
-        channelInfo: {
-            name: 'Example Channel',
-            subscribers: '1.2M',
-            totalViews: '300M',
-            videoCount: '150'
+    try {
+        // We call our backend API and pass the YouTube URL as a query parameter
+        const response = await axios.get(`${BACKEND_URL}/api/analyze`, {
+            params: {
+                url: url, // Pass the youtube url to the backend
+            },
+        });
+
+        // The backend returns the data, and we send it back to the component
+        return response.data;
+
+    } catch (error: any) {
+        // If our backend sends an error, we show it to the user
+        if (error.response && error.response.data && error.response.data.error) {
+            throw new Error(error.response.data.error);
         }
-    };
+        // For other network errors
+        throw new Error('Could not connect to the analysis service. Please try again later.');
+    }
 };
